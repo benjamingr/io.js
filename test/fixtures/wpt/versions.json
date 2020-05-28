@@ -30,5 +30,9 @@
   "hr-time": {
     "commit": "a5d1774ecf41751d1c9357c27c709ee33bf3e279",
     "path": "hr-time"
+  },
+  "dom/events": {
+    "commit": "6a76a185f913e3c027e369a567a276c62a8646d6",
+    "path": "dom/events"
   }
 }
