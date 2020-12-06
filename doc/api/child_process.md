@@ -351,6 +351,9 @@ signal.abort();
 <!-- YAML
 added: v0.5.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/36308
+    description: AbortSignal support was added.
   - version:
       - v13.2.0
       - v12.16.0
@@ -390,6 +393,7 @@ changes:
     done on Windows. Ignored on Unix. **Default:** `false`.
   * `uid` {number} Sets the user identity of the process (see setuid(2)).
   * `gid` {number} Sets the group identity of the process (see setgid(2)).
+  * `signal` {AbortSignal} allows aborting the execFile using an AbortSignal
 * Returns: {ChildProcess}
 
 The `child_process.fork()` method is a special case of
@@ -420,10 +424,16 @@ current process.
 The `shell` option available in [`child_process.spawn()`][] is not supported by
 `child_process.fork()` and will be ignored if set.
 
+Cancellation using `signal` works the same way as it does for
+[`child_process.spawn()`][].
+
 ### `child_process.spawn(command[, args][, options])`
 <!-- YAML
 added: v0.1.90
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/36308
+    description: AbortSignal support was added.
   - version:
       - v13.2.0
       - v12.16.0
@@ -466,6 +476,7 @@ changes:
     when `shell` is specified and is CMD. **Default:** `false`.
   * `windowsHide` {boolean} Hide the subprocess console window that would
     normally be created on Windows systems. **Default:** `false`.
+  * `signal` {AbortSignal} allows aborting the execFile using an AbortSignal
 * Returns: {ChildProcess}
 
 The `child_process.spawn()` method spawns a new process using the given
@@ -571,6 +582,21 @@ Node.js currently overwrites `argv[0]` with `process.execPath` on startup, so
 `process.argv[0]` in a Node.js child process will not match the `argv0`
 parameter passed to `spawn` from the parent, retrieve it with the
 `process.argv0` property instead.
+
+If the `signal` option is enabled, calling `.abort()` on the corresponding
+`AbortController` is similar to calling `.kill()` on the child process except
+the error passed to the callback will be an `AbortError`:
+
+```js
+const { spawn } = require('child_process');
+const controller = new AbortController();
+const { signal } = controller;
+const child = spawn('node', { signal });
+child.on('error', (err) => {
+  console.log(error); // an AbortError
+});
+signal.abort();
+```
 
 #### `options.detached`
 <!-- YAML
